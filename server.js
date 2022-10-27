@@ -27,6 +27,11 @@ app.get('/feedback', (req, res) =>
   res.sendFile(path.join(__dirname, '/public/pages/feedback.html'))
 );
 
+// Catch all wild card route for 404 (anything that is not specified above/in ./routes)
+app.get('/*', (req, res) =>
+  res.sendFile(path.join(__dirname, '/public/error.html'))
+);
+
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT} 🚀`)
 );
