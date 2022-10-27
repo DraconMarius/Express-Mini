@@ -1,31 +1,32 @@
 const diagnostics = require('express').Router();
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 const fs = require('fs');
 const { readAndAppend, readFromFile } = require('../helpers/fsUtils');
 let diagnosticJSON = require('../db/diagnostics.json');
-console.log(typeof diagnosticJSON);
-// let diagArry = [];
-// // const path = diagnosticJSON;
+let diagArry = [];
 
-// fs.readFile(diagnosticJSON, (err, data) => {
-//   if (err) {
-//     console.log(err + "readfile err");
-//   } else {
-//     diagArry = JSON.parse(data);
-//   }
-// }
-// )
+for(const i of diagnosticJSON) {
+  diagArry.push(i);
+}
 
 // GET Route for retrieving diagnostic information
 diagnostics.get('/', (req, res) => {
-  // TODO: Logic for sending all the content of db/diagnostics.json
-  console.log(diagArry);
-  res.json(diagArry);
+  res.send(JSON.stringify(diagArry));
 });
 
 // POST Route for a error logging
 diagnostics.post('/', (req, res) => {
-  // TODO: Logic for appending data to the db/diagnostics.json file
+  console.log(req.body);
+  let newObj = {
+    time: new Date().getTime(),
+    error_id: uuid.v4(),
+    errors: req.body
+  }
+  diagArry.push(newObj);
+  fs.writeFile("./db/diagnostics.json", JSON.stringify(diagArry), (err) => {
+    (err) ? console.log(err) : console.log("Successfully wrote to file");
+  });
+  res.send(JSON.stringify(diagArry));
 });
 
 module.exports = diagnostics;
